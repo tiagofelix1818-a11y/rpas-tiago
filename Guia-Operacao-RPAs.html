@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RPAs Engenharia — Guia de Operação</title>
+  <style>
+    [data-theme="light"]{
+      --bg:#f0f2f7;--bg2:#ffffff;--card:#ffffff;--card2:#f7f8fc;
+      --primary:#3b82f6;--accent:#10b981;--red:#dc2626;--yellow:#d97706;
+      --text:#1e293b;--text2:#475569;--text3:#94a3b8;
+      --border:rgba(0,0,0,.08);
+      --shadow:0 2px 12px rgba(0,0,0,.06);
+      --h2-grad:linear-gradient(135deg,#1e293b,#3b82f6);
+      --nav-logo-grad:linear-gradient(135deg,#1e293b,#3b82f6);
+      --code-bg:#f1f5f9;--code-color:#0f766e;
+    }
+    [data-theme="dark"]{
+      --bg:#060d1a;--bg2:#0a1226;--card:#111827;--card2:#1a2340;
+      --primary:#60a5fa;--accent:#34d399;--red:#f87171;--yellow:#fbbf24;
+      --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+      --border:rgba(96,165,250,.15);
+      --shadow:0 4px 24px rgba(0,0,0,.4);
+      --h2-grad:linear-gradient(135deg,#fff,#60a5fa);
+      --nav-logo-grad:linear-gradient(135deg,#fff,#60a5fa);
+      --code-bg:#1a2340;--code-color:#34d399;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);
+      line-height:1.7;min-height:100vh;transition:background .3s,color .3s}
+    ::selection{background:rgba(59,130,246,.25)}
+    a{color:var(--primary);text-decoration:none}
+    a:hover{text-decoration:underline}
+    code{font-family:'Space Mono',monospace;font-size:11px;background:var(--code-bg);
+      padding:2px 6px;border-radius:4px;color:var(--code-color)}
+    .wrapper{display:flex;min-height:100vh}
+    nav{position:fixed;top:0;left:0;width:270px;height:100vh;background:var(--bg2);
+      border-right:1px solid var(--border);padding:24px 0;overflow-y:auto;z-index:100;transition:all .3s}
+    nav .logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:12px;text-align:center}
+    nav .logo h2{font-size:14px;font-weight:900;background:var(--nav-logo-grad);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    nav .logo small{font-size:9px;color:var(--text3);font-family:'Space Mono',monospace;letter-spacing:2px;display:block;margin-top:4px}
+    nav .nav-group{padding:0 10px;margin-bottom:8px}
+    nav .nav-group-title{font-size:9px;font-family:'Space Mono',monospace;letter-spacing:2px;
+      color:var(--text3);text-transform:uppercase;padding:8px 12px 4px;font-weight:700}
+    nav ol{list-style:none;padding:0 4px}
+    nav ol li a{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;
+      font-size:12px;color:var(--text2);transition:all .2s;font-weight:500}
+    nav ol li a:hover{background:rgba(59,130,246,.08);color:var(--text);text-decoration:none}
+    nav ol li a .num{width:20px;height:20px;border-radius:5px;background:rgba(59,130,246,.1);
+      display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;
+      color:var(--primary);font-family:'Space Mono',monospace;flex-shrink:0}
+    main{margin-left:270px;flex:1;padding:40px 50px;max-width:940px}
+    section{margin-bottom:64px;animation:fadeUp .5s ease both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+    .section-label{font-size:9px;font-family:'Space Mono',monospace;letter-spacing:3px;color:var(--primary);text-transform:uppercase;margin-bottom:4px}
+    section h2{font-size:24px;font-weight:900;margin-bottom:8px;background:var(--h2-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    section h3{font-size:16px;font-weight:800;color:var(--text);margin:24px 0 10px}
+    section p{font-size:13px;color:var(--text2);margin-bottom:14px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:14px;box-shadow:var(--shadow);transition:all .3s}
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0}
+    .card-sm{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;box-shadow:var(--shadow);transition:all .3s}
+    .card-sm .icon{font-size:24px;margin-bottom:6px}
+    .card-sm .label{font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;letter-spacing:1px}
+    .card-sm .val{font-size:12px;font-weight:700;color:var(--text);margin-top:3px}
+    .steps{counter-reset:step;margin:16px 0}
+    .step{display:flex;gap:14px;margin-bottom:16px;padding-left:6px}
+    .step::before{counter-increment:step;content:counter(step);width:26px;height:26px;border-radius:7px;
+      background:linear-gradient(135deg,var(--primary),#1d4ed8);color:#fff;display:flex;align-items:center;
+      justify-content:center;font-size:11px;font-weight:700;font-family:'Space Mono',monospace;flex-shrink:0}
+    .step-body h4{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+    .step-body p{font-size:12px;color:var(--text2);margin:0}
+    .alert{border-radius:10px;padding:12px 16px;margin:14px 0;font-size:12px;display:flex;gap:8px;align-items:flex-start;transition:all .3s}
+    .alert-warn{background:rgba(217,119,6,.07);border:1px solid rgba(217,119,6,.18);color:var(--yellow)}
+    .alert-info{background:rgba(59,130,246,.05);border:1px solid var(--border);color:var(--text2)}
+    .alert-danger{background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.15);color:var(--red)}
+    .alert-success{background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.18);color:var(--accent)}
+    .tbl{width:100%;border-collapse:collapse;font-size:11px;margin:14px 0}
+    .tbl th{background:var(--card2);color:var(--primary);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+    .tbl td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+    .tbl tr:hover td{background:rgba(59,130,246,.03)}
+    .code{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-family:'Space Mono',monospace;font-size:11px;color:var(--code-color);overflow-x:auto;margin:10px 0;white-space:pre;line-height:1.7;transition:all .3s}
+    .tag{display:inline-block;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;font-family:'Space Mono',monospace}
+    .tag-blue{background:rgba(59,130,246,.1);color:var(--primary)}
+    .tag-green{background:rgba(16,185,129,.1);color:var(--accent)}
+    .tag-red{background:rgba(220,38,38,.1);color:var(--red)}
+    .tag-yellow{background:rgba(217,119,6,.1);color:var(--yellow)}
+    .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0}
+    .flow-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-align:center;min-width:90px;box-shadow:var(--shadow)}
+    .flow-item .fi-icon{font-size:20px;margin-bottom:3px}
+    .flow-item .fi-label{font-size:10px;color:var(--text2);font-weight:600}
+    .flow-item .fi-sub{font-size:8px;color:var(--text3);font-family:'Space Mono',monospace}
+    .flow-arrow{color:var(--primary);font-size:16px;font-weight:700}
+    .theme-toggle{position:fixed;top:14px;right:14px;z-index:999;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:var(--shadow);transition:all .3s}
+    .theme-toggle:hover{transform:scale(1.1);border-color:var(--primary)}
+    .rpa-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+    .rpa-header .rpa-icon{font-size:32px}
+    .rpa-header .rpa-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+    @media(max-width:768px){nav{display:none}main{margin-left:0;padding:20px 14px}.flow{flex-direction:column}.flow-arrow{transform:rotate(90deg)}}
+  </style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Alternar tema">☀️</button>
+<div class="wrapper">
+<nav>
+  <div class="logo"><h2>RPAs Engenharia<br>Pague Menos</h2><small>Guia de Operação</small></div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Geral</div>
+    <ol>
+      <li><a href="#visao"><span class="num">1</span> Visão Geral</a></li>
+      <li><a href="#planilha"><span class="num">2</span> Planilha Base</a></li>
+      <li><a href="#ambiente"><span class="num">3</span> Ambiente &amp; Setup</a></li>
+    </ol>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">RPAs Individuais</div>
+    <ol>
+      <li><a href="#rpa-bases"><span class="num">4</span> Extração SAP (bases_raw)</a></li>
+      <li><a href="#rpa-pipeline"><span class="num">5</span> Pipeline Financeiro</a></li>
+      <li><a href="#rpa-rc"><span class="num">6</span> RC SAP (ME51N)</a></li>
+      <li><a href="#rpa-pedido"><span class="num">7</span> Pedido SAP (ME21N)</a></li>
+      <li><a href="#rpa-n1"><span class="num">8</span> N1 Zendesk</a></li>
+      <li><a href="#rpa-n2"><span class="num">9</span> N2 Zendesk</a></li>
+      <li><a href="#rpa-tickets-email"><span class="num">10</span> Tickets E-mail</a></li>
+      <li><a href="#rpa-pedidos-email"><span class="num">11</span> Pedidos Coord E-mail</a></li>
+      <li><a href="#rpa-gestor-nf"><span class="num">12</span> Gestor Master NF</a></li>
+      <li><a href="#rpa-lumicenter"><span class="num">13</span> Leitor Lumicenter</a></li>
+      <li><a href="#rpa-persun"><span class="num">14</span> Leitor Persun</a></li>
+      <li><a href="#rpa-qld"><span class="num">15</span> Análise QLD (ANVISA)</a></li>
+    </ol>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">Apoio</div>
+    <ol>
+      <li><a href="#app"><span class="num">16</span> Central (APP_RPA)</a></li>
+      <li><a href="#erros"><span class="num">17</span> Erros Comuns</a></li>
+      <li><a href="#glossario"><span class="num">18</span> Glossário</a></li>
+    </ol>
+  </div>
+</nav>
+
+<main>
+
+<!-- ═══ SEÇÃO 1 — VISÃO GERAL ═══ -->
+<section id="visao">
+  <div class="section-label">Seção 1 · Introdução</div>
+  <h2>Visão Geral — RPAs Engenharia</h2>
+  <p>Conjunto de automações Python (Jupyter Notebooks) que eliminam trabalho manual repetitivo do setor de Engenharia — Obras. Cobrem extração SAP, abertura de chamados Zendesk, envio de e-mails e leitura de PDFs.</p>
+  <div class="card-grid">
+    <div class="card-sm"><div class="icon">🤖</div><div class="label">Formato</div><div class="val">Jupyter Notebooks</div></div>
+    <div class="card-sm"><div class="icon">👨‍💻</div><div class="label">Dev</div><div class="val">Tiago Felix</div></div>
+    <div class="card-sm"><div class="icon">🏢</div><div class="label">Setor</div><div class="val">Engenharia — Obras</div></div>
+    <div class="card-sm"><div class="icon">🐍</div><div class="label">Stack</div><div class="val">Python 3.x</div></div>
+  </div>
+  <div class="alert alert-danger"><span>⚠️</span><div><strong>Conta Pessoal:</strong> Todos os notebooks usam caminhos absolutos do user 126815 (Tiago). O substituto precisará ajustar <code>BASE_PATH</code> em cada notebook.</div></div>
+</section>
+
+<!-- ═══ SEÇÃO 2 — PLANILHA BASE ═══ -->
+<section id="planilha">
+  <div class="section-label">Seção 2 · Dados</div>
+  <h2>Planilha Base de Pagamentos</h2>
+  <p>Fonte central de dados para a maioria dos RPAs. Fica no SharePoint do time, sincronizada via OneDrive.</p>
+  <h3>Caminho Completo</h3>
+  <div class="code">C:\Users\126815\OneDrive - paguemenos.com.br\ENGENHARIA - OBRAS - Documentos\BANCO DE DADOS - POWER BI\BI - OUTROS\BASE CONTROLE DE PAGAMENTOS.xlsx</div>
+  <h3>Aba Principal: SOLICITAÇÃO DE PAGAMENTO</h3>
+  <div class="card"><p style="font-size:11px;color:var(--text3);font-family:'Space Mono',monospace;line-height:2">FILIAL · LOJA · CNPJ · COORDENADOR · PROJETO · SERVIÇO · FORNECEDOR · VALOR · RC · PEDIDO · NF · VENCIMENTO · FORMA PGTO · TICKET · STATUS · MIRO · ENVIAR COORD?</p></div>
+  <h3>Outras Abas</h3>
+  <table class="tbl">
+    <tr><th>Aba</th><th>Usada por</th><th>Função</th></tr>
+    <tr><td>E-MAIL</td><td>RPA_TICKETS_E-MAIL</td><td>Cadastro de e-mails dos fornecedores</td></tr>
+    <tr><td>RC</td><td>RPA_RC_SAP</td><td>Fila de requisições de compra</td></tr>
+    <tr><td>PEDIDOS</td><td>RPA_PEDIDO_SAP</td><td>Fila de pedidos de compra</td></tr>
+  </table>
+  <h3>Pasta do Pipeline Financeiro</h3>
+  <div class="code">C:\Users\126815\OneDrive - paguemenos.com.br\ENGENHARIA - OBRAS - Documentos\BANCO DE DADOS - PLATAFORMA FINANCEIRA\PROJETO_PLATAFORMA_FINANCEIRA\
+├── data\raw\           ← EXPORT_REAL.XLSX + EXPORT_COMPROMIS.XLSX
+├── data\dimensions\    ← dim_site.xlsx (mapeamento ordens → sites)
+└── ...</div>
+  <div class="alert alert-warn"><span>⚠️</span><div>Não mova nem renomeie esses arquivos. Os notebooks referenciam caminhos absolutos.</div></div>
+</section>
+
+<!-- ═══ SEÇÃO 3 — AMBIENTE ═══ -->
+<section id="ambiente">
+  <div class="section-label">Seção 3 · Setup</div>
+  <h2>Ambiente &amp; Dependências</h2>
+  <table class="tbl">
+    <tr><th>Software</th><th>Usado por</th></tr>
+    <tr><td>Python 3.11+ (Anaconda)</td><td>Todos</td></tr>
+    <tr><td>Jupyter Notebook/Lab</td><td>Todos (execução)</td></tr>
+    <tr><td>SAP GUI 7.x/8.x</td><td>bases_raw, RC_SAP, PEDIDO_SAP</td></tr>
+    <tr><td>Google Chrome (última)</td><td>N1_ZENDESK, N2_ZENDESK</td></tr>
+    <tr><td>Microsoft Outlook (desktop)</td><td>TICKETS_E-MAIL, PEDIDOS_Coord</td></tr>
+    <tr><td>Microsoft Excel (desktop)</td><td>N1, N2, TICKETS_E-MAIL</td></tr>
+  </table>
+  <h3>Instalar Dependências</h3>
+  <div class="code">pip install pandas openpyxl xlwings pywin32 selenium python-dateutil PyMuPDF requests nbformat tqdm</div>
+  <div class="alert alert-info"><span>💡</span><div>Os notebooks tentam instalar deps faltantes automaticamente, mas é melhor ter tudo pré-instalado.</div></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- RPAs INDIVIDUAIS — cada um com sua seção dedicada -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<!-- ═══ SEÇÃO 4 — RPA BASES RAW ═══ -->
+<section id="rpa-bases">
+  <div class="section-label">Seção 4 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">📦</span>
+    <div><h2>RPA Extração SAP (bases_raw)</h2>
+      <div class="rpa-meta"><span class="tag tag-blue">SAP GUI</span><span class="tag tag-green">Extração</span></div>
+    </div>
+  </div>
+  <p>Conecta ao SAP GUI, abre a transação ZCO004 e extrai os relatórios de Real e Compromisso para todas as ordens.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">RPA_bases_raw.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Lê <code>dim_site.xlsx</code> para obter a lista de ordens SAP</li>
+      <li>Abre nova sessão SAP via COM (win32com)</li>
+      <li>Navega até ZCO004, cola as ordens, executa</li>
+      <li>Exporta resultado para Excel via clipboard</li>
+      <li>Salva <code>EXPORT_REAL.XLSX</code> e <code>EXPORT_COMPROMIS.XLSX</code> na pasta <code>data/raw/</code></li>
+    </ul>
+  </div>
+
+  <h3>Pré-requisitos</h3>
+  <div class="alert alert-warn"><span>⚠️</span><div>SAP GUI precisa estar <strong>aberto e logado</strong> com pelo menos 1 sessão ativa antes de rodar.</div></div>
+
+  <h3>Planilha / Caminho</h3>
+  <table class="tbl">
+    <tr><th>Recurso</th><th>Caminho</th></tr>
+    <tr><td>dim_site.xlsx (entrada)</td><td><code>...\PROJETO_PLATAFORMA_FINANCEIRA\data\dimensions\</code></td></tr>
+    <tr><td>EXPORT_REAL.XLSX (saída)</td><td><code>...\PROJETO_PLATAFORMA_FINANCEIRA\data\raw\</code></td></tr>
+    <tr><td>EXPORT_COMPROMIS.XLSX (saída)</td><td><code>...\PROJETO_PLATAFORMA_FINANCEIRA\data\raw\</code></td></tr>
+  </table>
+
+  <h3>Frequência</h3>
+  <p>1x por dia (manhã), antes do pipeline financeiro.</p>
+</section>
+
+<!-- ═══ SEÇÃO 5 — PIPELINE FINANCEIRO ═══ -->
+<section id="rpa-pipeline">
+  <div class="section-label">Seção 5 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">📊</span>
+    <div><h2>Pipeline Financeiro-Tickets-Utilities</h2>
+      <div class="rpa-meta"><span class="tag tag-green">Pipeline</span><span class="tag tag-blue">Google Sheets</span></div>
+    </div>
+  </div>
+  <p>Processa os exports do SAP e envia dados consolidados para o Google Sheets (dashboard).</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">pipeline_financeiro-tickets-utilities_completo.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Lê <code>EXPORT_REAL.XLSX</code> e <code>EXPORT_COMPROMIS.XLSX</code></li>
+      <li>Cruza com <code>dim_site.xlsx</code> (mapeamento ordem → site → tarefa)</li>
+      <li>Calcula: Real, Compromisso, Compromisso Aberto, Status por tarefa/site</li>
+      <li>Envia via POST HTTP para o Google Apps Script</li>
+      <li>Atualiza 3 abas no Sheets: <strong>financeiro_consolidado</strong>, <strong>Controle de Tickets</strong>, <strong>controle_utilities</strong></li>
+    </ul>
+  </div>
+
+  <h3>Pré-requisitos</h3>
+  <div class="alert alert-info"><span>💡</span><div>Rodar <strong>após</strong> o RPA_bases_raw. Precisa de internet (envia dados para Apps Script).</div></div>
+
+  <h3>URL do Apps Script</h3>
+  <div class="code">URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbye.../exec"</div>
+
+  <h3>Frequência</h3>
+  <p>1x por dia, imediatamente após o RPA_bases_raw.</p>
+</section>
+
+<!-- ═══ SEÇÃO 6 — RPA RC SAP ═══ -->
+<section id="rpa-rc">
+  <div class="section-label">Seção 6 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">🔐</span>
+    <div><h2>RPA RC SAP (ME51N)</h2>
+      <div class="rpa-meta"><span class="tag tag-blue">SAP GUI</span><span class="tag tag-yellow">Compras</span></div>
+    </div>
+  </div>
+  <p>Cria Requisições de Compra automaticamente no SAP via transação ME51N.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">RPA_RC_SAP.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Lê a planilha base (aba RC ou template dedicado)</li>
+      <li>Para cada linha pendente, abre ME51N no SAP</li>
+      <li>Preenche: material, quantidade, centro, grupo de compras, fornecedor</li>
+      <li>Salva a RC e grava o número gerado de volta na planilha</li>
+      <li>Linhas com status "Feito pela automação" são puladas</li>
+    </ul>
+  </div>
+
+  <h3>Pré-requisitos</h3>
+  <div class="alert alert-warn"><span>⚠️</span><div>SAP GUI aberto e logado. Planilha Excel aberta na aba correta.</div></div>
+
+  <h3>Planilha</h3>
+  <p>Usa a <strong>BASE CONTROLE DE PAGAMENTOS.xlsx</strong> — aba "RC" ou template em <code>C:\AUTOMACAO_RC_SAP\</code></p>
+</section>
+
+<!-- ═══ SEÇÃO 7 — RPA PEDIDO SAP ═══ -->
+<section id="rpa-pedido">
+  <div class="section-label">Seção 7 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">📋</span>
+    <div><h2>RPA Pedido SAP (ME21N)</h2>
+      <div class="rpa-meta"><span class="tag tag-blue">SAP GUI</span><span class="tag tag-yellow">Compras</span></div>
+    </div>
+  </div>
+  <p>Cria Pedidos de Compra automaticamente no SAP via transação ME21N.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">RPA_PEDIDO_SAP.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Lê template: <code>C:\AUTOMACAO_RC_SAP\template_pedidos_me21n_simplificado.xlsx</code></li>
+      <li>Para cada pedido, abre ME21N e preenche: BSART, EKORG, EKGRP, BUKRS, fornecedor, itens</li>
+      <li>Suporta pedidos com múltiplos itens (até 5)</li>
+      <li>Modo TESTE disponível (não salva no SAP)</li>
+      <li>Grava log em <code>C:\AUTOMACAO_RC_SAP\pedidos_log.txt</code></li>
+    </ul>
+  </div>
+
+  <h3>Pré-requisitos</h3>
+  <div class="alert alert-warn"><span>⚠️</span><div>SAP GUI aberto e logado. Template preenchido em <code>C:\AUTOMACAO_RC_SAP\</code>.</div></div>
+</section>
+
+<!-- ═══ SEÇÃO 8 — RPA N1 ZENDESK ═══ -->
+<section id="rpa-n1">
+  <div class="section-label">Seção 8 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">🎫</span>
+    <div><h2>RPA N1 Zendesk (Regularização NF)</h2>
+      <div class="rpa-meta"><span class="tag tag-yellow">Zendesk</span><span class="tag tag-green">Selenium</span></div>
+    </div>
+  </div>
+  <p>Abre chamados de Regularização de NF no portal Zendesk automaticamente.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">RPA_N1_ZENDESK.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Lê aba "SOLICITAÇÃO DE PAGAMENTO" da planilha base (via xlwings)</li>
+      <li>Filtra linhas N1 pendentes (sem ticket)</li>
+      <li>Abre Chrome com perfil salvo (evita login/MFA)</li>
+      <li>Navega: Serviços Financeiros → Regularização NF → Lançamento Reg. NF de Serviço</li>
+      <li>Preenche: Setor Aprovação (Obras), Centro de Custo, Ordem, Cod. Fornecedor, Bandeira, Valor, Vencimento</li>
+      <li>Anexa PDF da NF se encontrado na pasta do projeto</li>
+      <li>Grava número do ticket na planilha</li>
+    </ul>
+  </div>
+
+  <h3>Planilha</h3>
+  <p><strong>BASE CONTROLE DE PAGAMENTOS.xlsx</strong> — aba "SOLICITAÇÃO DE PAGAMENTO"</p>
+
+  <h3>Pasta de PDFs</h3>
+  <div class="code">C:\Users\126815\...\Área de Trabalho\NFS\2025\[PROJETO]\[FORNECEDOR]\</div>
+
+  <h3>Pré-requisitos</h3>
+  <div class="alert alert-info"><span>💡</span><div>Chrome instalado. Na 1ª execução, faça login manual no Zendesk. Perfil salvo em <code>ChromeProfile/</code> local.</div></div>
+</section>
+
+<!-- ═══ SEÇÃO 9 — RPA N2 ZENDESK ═══ -->
+<section id="rpa-n2">
+  <div class="section-label">Seção 9 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">🎟️</span>
+    <div><h2>RPA N2 Zendesk (Lançamento NF)</h2>
+      <div class="rpa-meta"><span class="tag tag-yellow">Zendesk</span><span class="tag tag-green">Selenium</span></div>
+    </div>
+  </div>
+  <p>Abre chamados de Lançamento de NF de Serviço no portal Zendesk.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">RPA_N2_ZENDESK.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Mesmo fluxo do N1, mas para chamados de <strong>Lançamento de NF</strong></li>
+      <li>Preenche campos diferentes: Forma de Pagamento, Pedido de Compras, Local, Fornecedor</li>
+      <li>Busca PDFs em duas pastas: NFs normais e NFs de Gerenciadoras</li>
+      <li>Login: <code>126815@pmenos.com.br</code></li>
+    </ul>
+  </div>
+
+  <h3>Pastas de PDFs</h3>
+  <div class="code">NFs normais:       ...\Área de Trabalho\NFS\2025\[PROJETO]\[FORNECEDOR]\
+NFs gerenciadoras: ...\Área de Trabalho\NFS\GERENCIADORAS\</div>
+
+  <h3>Pré-requisitos</h3>
+  <p>Mesmos do N1: Chrome + perfil logado + planilha aberta.</p>
+</section>
+
+<!-- ═══ SEÇÃO 10 — RPA TICKETS E-MAIL ═══ -->
+<section id="rpa-tickets-email">
+  <div class="section-label">Seção 10 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">📧</span>
+    <div><h2>RPA Tickets E-mail</h2>
+      <div class="rpa-meta"><span class="tag tag-red">Outlook</span><span class="tag tag-green">Leitura</span></div>
+    </div>
+  </div>
+  <p>Lê e-mails de tickets no Outlook e atualiza a planilha com data de pagamento e número MIRO.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">RPA_TICKETS_E-MAIL.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Conecta ao Outlook via COM (pywin32)</li>
+      <li>Busca e-mails com "ticket" no assunto na Caixa de Entrada</li>
+      <li>Extrai: número do ticket, data de pagamento, número MIRO</li>
+      <li>Atualiza a planilha base (via xlwings) com os dados extraídos</li>
+      <li>Ignora e-mails que não seguem o padrão de pagamento</li>
+    </ul>
+  </div>
+
+  <h3>Planilha</h3>
+  <p><strong>BASE CONTROLE DE PAGAMENTOS.xlsx</strong> — aba "SOLICITAÇÃO DE PAGAMENTO" + aba "E-MAIL" (cadastro fornecedores)</p>
+
+  <h3>Pré-requisitos</h3>
+  <div class="alert alert-warn"><span>⚠️</span><div>Outlook desktop precisa estar <strong>aberto</strong>. Excel com a planilha também aberto.</div></div>
+</section>
+
+<!-- ═══ SEÇÃO 11 — RPA PEDIDOS COORD E-MAIL ═══ -->
+<section id="rpa-pedidos-email">
+  <div class="section-label">Seção 11 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">📬</span>
+    <div><h2>RPA Pedidos Coord E-mail</h2>
+      <div class="rpa-meta"><span class="tag tag-red">Outlook</span><span class="tag tag-yellow">Envio</span></div>
+    </div>
+  </div>
+  <p>Envia e-mails de pedidos de compra agrupados por coordenador e fornecedor.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">RPA_PEDIDOS_Coord_E-MAIL-.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Lê aba "SOLICITAÇÃO DE PAGAMENTO" da planilha base</li>
+      <li>Filtra linhas com coluna "ENVIAR COORD?" marcada</li>
+      <li>Agrupa por Coordenador + Fornecedor</li>
+      <li>Monta e-mail com tabela HTML (Filial, Loja, Projeto, Serviço, Valor, RC, Pedido)</li>
+      <li>Envia via Outlook COM</li>
+      <li>Pede confirmação antes de enviar (input s/n)</li>
+    </ul>
+  </div>
+
+  <h3>Planilha</h3>
+  <p><strong>BASE CONTROLE DE PAGAMENTOS.xlsx</strong> — aba "SOLICITAÇÃO DE PAGAMENTO"</p>
+
+  <h3>Pré-requisitos</h3>
+  <div class="alert alert-warn"><span>⚠️</span><div>Outlook desktop aberto. Planilha aberta no Excel (xlwings precisa).</div></div>
+</section>
+
+<!-- ═══ SEÇÃO 12 — RPA GESTOR MASTER NF ═══ -->
+<section id="rpa-gestor-nf">
+  <div class="section-label">Seção 12 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">📁</span>
+    <div><h2>RPA Gestor Master NF</h2>
+      <div class="rpa-meta"><span class="tag tag-green">Local</span><span class="tag tag-blue">Gestão</span></div>
+    </div>
+  </div>
+  <p>Varre pastas de NFs, organiza e cataloga PDFs por projeto/fornecedor.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">RPA_GESTOR_MASTER_NF.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Varre pastas dos últimos 15 dias (configurável via <code>LOOKBACK_DAYS</code>)</li>
+      <li>Projetos: LOJAS NOVAS, VIRADA DE BANDEIRA, RETROFIT, RESIZE, ESPECIAL, etc.</li>
+      <li>Cataloga PDFs encontrados, identifica NFs por padrão de nome</li>
+      <li>Gera relatório de diagnóstico</li>
+    </ul>
+  </div>
+
+  <h3>Pasta Raiz</h3>
+  <div class="code">C:\Users\126815\...\Área de Trabalho\NFS\2025\</div>
+</section>
+
+<!-- ═══ SEÇÃO 13 — LEITOR LUMICENTER ═══ -->
+<section id="rpa-lumicenter">
+  <div class="section-label">Seção 13 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">💡</span>
+    <div><h2>RPA Leitor Lumicenter</h2>
+      <div class="rpa-meta"><span class="tag tag-green">Local</span><span class="tag tag-blue">PDF → Excel</span></div>
+    </div>
+  </div>
+  <p>Extrai itens de orçamentos PDF da Lumicenter (luminárias) e gera planilha consolidada.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">RPA_LEITOR_LUMICEN.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Lê PDFs de orçamento na pasta de entrada</li>
+      <li>Extrai: código, descrição, quantidade, valor unitário, valor total</li>
+      <li>Gera <code>planilha_orcamentos_lumicenter.xlsx</code> com todos os itens</li>
+    </ul>
+  </div>
+
+  <h3>Pasta de Entrada</h3>
+  <div class="code">C:\Users\126815\...\ABERTURA DE REQUISIÇÃO\LOJAS NOVAS\LUMICENTER\pdfs_auto_lumi\</div>
+
+  <h3>Como usar</h3>
+  <div class="steps">
+    <div class="step"><div class="step-body"><h4>Coloque os PDFs na pasta</h4><p>Copie os orçamentos da Lumicenter para a pasta acima.</p></div></div>
+    <div class="step"><div class="step-body"><h4>Execute o notebook</h4><p>Rode a célula. A planilha é gerada automaticamente na mesma pasta.</p></div></div>
+  </div>
+</section>
+
+<!-- ═══ SEÇÃO 14 — LEITOR PERSUN ═══ -->
+<section id="rpa-persun">
+  <div class="section-label">Seção 14 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">📖</span>
+    <div><h2>RPA Leitor Persun</h2>
+      <div class="rpa-meta"><span class="tag tag-green">Local</span><span class="tag tag-blue">PDF → Excel</span></div>
+    </div>
+  </div>
+  <p>Extrai itens de orçamentos PDF da Persun (persianas) e gera planilha consolidada.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">RPA_LEITOR_PERSUN.ipynb</div>
+
+  <h3>O que faz</h3>
+  <p>Mesma lógica do Leitor Lumicenter: lê PDFs, extrai itens (código, descrição, medidas, valor) e gera Excel.</p>
+
+  <h3>Pasta de Entrada</h3>
+  <div class="code">C:\Users\126815\...\ABERTURA DE REQUISIÇÃO\LOJAS NOVAS\PERSUN\pdfs_auto_persun\</div>
+</section>
+
+<!-- ═══ SEÇÃO 15 — ANÁLISE QLD ═══ -->
+<section id="rpa-qld">
+  <div class="section-label">Seção 15 · RPA</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">🧪</span>
+    <div><h2>RPA Análise QLD (ANVISA RDC 529)</h2>
+      <div class="rpa-meta"><span class="tag tag-green">Local</span><span class="tag tag-red">Compliance</span></div>
+    </div>
+  </div>
+  <p>Analisa composição de produtos cosméticos contra a base de ingredientes proibidos da ANVISA.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">RPA_Analise_QLD.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Carrega base ANVISA (1449 CAS proibidos, 1905 substâncias)</li>
+      <li>Lê formulários de composição dos fornecedores (pasta de entrada)</li>
+      <li>Identifica ingredientes proibidos por CAS number ou nome</li>
+      <li>Gera relatório individual + consolidado</li>
+      <li>Move arquivos processados para pasta "analisados"</li>
+    </ul>
+  </div>
+
+  <h3>Estrutura de Pastas</h3>
+  <div class="code">C:\...\Área de Trabalho\RPA_ANALISE_RDC\
+├── fornecedores_a_analisar\   ← colocar arquivos novos aqui
+├── base_anvisa\               ← RDC529_Ingredientes_Proibidos_ANVISA.xlsx
+├── analisados\                ← originais processados
+├── resultados_individuais\    ← análises por fornecedor
+└── Relatorio_Geral_RDC529.xlsx</div>
+</section>
+
+<!-- ═══ SEÇÃO 16 — APP CENTRAL ═══ -->
+<section id="app">
+  <div class="section-label">Seção 16 · Interface</div>
+  <div class="rpa-header">
+    <span class="rpa-icon">🖥️</span>
+    <div><h2>Central de Automação (APP_RPA_v3)</h2>
+      <div class="rpa-meta"><span class="tag tag-blue">tkinter</span><span class="tag tag-green">GUI</span></div>
+    </div>
+  </div>
+  <p>Interface gráfica que funciona como painel de controle para executar os RPAs com um clique.</p>
+
+  <h3>Arquivo</h3>
+  <div class="code">APP_RPA_v3.ipynb</div>
+
+  <h3>O que faz</h3>
+  <div class="card">
+    <ul style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+      <li>Interface moderna com tema dark/light (tkinter)</li>
+      <li>Botões para cada RPA com ícone e cor</li>
+      <li>Executa notebooks via nbformat + subprocess</li>
+      <li>Log de execução em tempo real</li>
+      <li>Links rápidos: Power BI e SharePoint Engenharia</li>
+    </ul>
+  </div>
+
+  <h3>RPAs no Painel</h3>
+  <table class="tbl">
+    <tr><th>Botão</th><th>Notebook executado</th></tr>
+    <tr><td>📊 Gestor NFS ULTRA</td><td>RPA_GESTOR_NFS_ULTRA.ipynb</td></tr>
+    <tr><td>💡 Leitor Lumicenter</td><td>RPA_LEITOR_LUMICEN.ipynb</td></tr>
+    <tr><td>📖 Leitor Persun</td><td>RPA_LEITOR_PERSUN.ipynb</td></tr>
+    <tr><td>🎫 N1 Zendesk</td><td>RPA_N1_ZENDESK.ipynb</td></tr>
+    <tr><td>📧 Pedidos Coord</td><td>RPA_PEDIDOS_Coord_E-MAIL-.ipynb</td></tr>
+    <tr><td>🔐 RC SAP</td><td>RPA_RC_SAP.ipynb</td></tr>
+    <tr><td>🎟️ Tickets E-mail</td><td>RPA_TICKETS_E-MAIL.ipynb</td></tr>
+  </table>
+
+  <h3>Como rodar</h3>
+  <div class="steps">
+    <div class="step"><div class="step-body"><h4>Abra APP_RPA_v3.ipynb no Jupyter</h4><p>Execute a célula. A janela tkinter abre automaticamente.</p></div></div>
+    <div class="step"><div class="step-body"><h4>Clique no RPA desejado</h4><p>O notebook correspondente é executado em background. Log aparece no painel.</p></div></div>
+  </div>
+</section>
+
+<!-- ═══ SEÇÃO 17 — ERROS COMUNS ═══ -->
+<section id="erros">
+  <div class="section-label">Seção 17 · Problemas</div>
+  <h2>Erros Comuns e Soluções</h2>
+  <table class="tbl">
+    <tr><th>Erro</th><th>Causa</th><th>Solução</th></tr>
+    <tr><td><code>com_error: control not found by id</code></td><td>SAP não está na tela esperada</td><td>Feche popups no SAP. Verifique se está na tela inicial.</td></tr>
+    <tr><td><code>com_error: Membro não encontrado</code></td><td>Excel não aberto ou aba inexistente</td><td>Abra o Excel com a planilha antes de rodar.</td></tr>
+    <tr><td><code>FileNotFoundError</code></td><td>OneDrive não sincronizou</td><td>Verifique sync do OneDrive. Confirme caminho no Explorer.</td></tr>
+    <tr><td>Chrome não abre</td><td>ChromeDriver desatualizado</td><td>Atualize Chrome ou deixe selenium-manager resolver.</td></tr>
+    <tr><td>Timeout no Zendesk</td><td>Portal lento ou layout mudou</td><td>Teste manualmente. Se mudou, ajuste seletores no código.</td></tr>
+    <tr><td><code>InsecureRequestWarning</code></td><td>SSL não verificado (Apps Script)</td><td>Normal — é warning, não erro. Pipeline funciona.</td></tr>
+    <tr><td>Outlook COM error</td><td>Outlook não aberto</td><td>Abra Outlook desktop antes de rodar.</td></tr>
+    <tr><td>Planilha "em uso"</td><td>Outro processo tem o arquivo</td><td>Feche outras instâncias do Excel.</td></tr>
+  </table>
+</section>
+
+<!-- ═══ SEÇÃO 18 — GLOSSÁRIO ═══ -->
+<section id="glossario">
+  <div class="section-label">Seção 18 · Referência</div>
+  <h2>Glossário</h2>
+  <div class="card" style="margin-bottom:8px"><h4 style="color:var(--primary);font-size:12px;margin-bottom:3px">SAP GUI / COM Object</h4><p style="font-size:12px;margin:0">Interface gráfica do SAP controlada via pywin32. Simula cliques e preenchimento.</p></div>
+  <div class="card" style="margin-bottom:8px"><h4 style="color:var(--primary);font-size:12px;margin-bottom:3px">ZCO004</h4><p style="font-size:12px;margin:0">Transação SAP para consulta de custos por ordem. Usada pelo RPA_bases_raw.</p></div>
+  <div class="card" style="margin-bottom:8px"><h4 style="color:var(--primary);font-size:12px;margin-bottom:3px">ME51N / ME21N</h4><p style="font-size:12px;margin:0">Transações SAP: Requisição de Compra (ME51N) e Pedido de Compra (ME21N).</p></div>
+  <div class="card" style="margin-bottom:8px"><h4 style="color:var(--primary);font-size:12px;margin-bottom:3px">Zendesk / Portal de Serviços</h4><p style="font-size:12px;margin:0">Sistema de chamados (portaldeservicos.pmenos.com.br). RPAs N1/N2 abrem tickets via Selenium.</p></div>
+  <div class="card" style="margin-bottom:8px"><h4 style="color:var(--primary);font-size:12px;margin-bottom:3px">N1 / N2</h4><p style="font-size:12px;margin:0">N1 = Regularização de NF (campos contábeis). N2 = Lançamento de NF (pagamento direto).</p></div>
+  <div class="card" style="margin-bottom:8px"><h4 style="color:var(--primary);font-size:12px;margin-bottom:3px">dim_site.xlsx</h4><p style="font-size:12px;margin:0">Tabela dimensão: mapeia ordens SAP → sites/lojas. Usada pelo pipeline.</p></div>
+  <div class="card" style="margin-bottom:8px"><h4 style="color:var(--primary);font-size:12px;margin-bottom:3px">xlwings</h4><p style="font-size:12px;margin:0">Biblioteca Python que controla Excel desktop via COM. Lê/grava células em tempo real.</p></div>
+  <div class="card" style="margin-bottom:8px"><h4 style="color:var(--primary);font-size:12px;margin-bottom:3px">MIRO</h4><p style="font-size:12px;margin:0">Número de documento de pagamento SAP. Padrão 51XXXXXXXXX.</p></div>
+  <div class="card" style="margin-bottom:8px"><h4 style="color:var(--primary);font-size:12px;margin-bottom:3px">Selenium / ChromeDriver</h4><p style="font-size:12px;margin:0">Controla o navegador automaticamente. Usado nos RPAs Zendesk.</p></div>
+  <div class="card" style="margin-bottom:8px"><h4 style="color:var(--primary);font-size:12px;margin-bottom:3px">PyMuPDF (fitz)</h4><p style="font-size:12px;margin:0">Biblioteca para leitura de PDFs. Usada pelos leitores Lumicenter e Persun.</p></div>
+</section>
+
+<!-- RODAPÉ -->
+<div style="margin-top:60px;padding-top:20px;border-top:1px solid var(--border);text-align:center">
+  <p style="font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;letter-spacing:1px">
+    RPAs Engenharia · Pague Menos · 2026<br>
+    Desenvolvido por <strong style="color:var(--primary)">Tiago Felix</strong> · Setor Engenharia — Obras
+  </p>
+</div>
+
+</main>
+</div>
+
+<script>
+function toggleTheme(){
+  const html=document.documentElement;
+  const btn=document.getElementById('themeToggle');
+  if(html.getAttribute('data-theme')==='light'){
+    html.setAttribute('data-theme','dark');
+    btn.textContent='☀️';
+    localStorage.setItem('rpa-theme','dark');
+  }else{
+    html.setAttribute('data-theme','light');
+    btn.textContent='🌙';
+    localStorage.setItem('rpa-theme','light');
+  }
+}
+(function(){
+  const saved=localStorage.getItem('rpa-theme');
+  if(saved){
+    document.documentElement.setAttribute('data-theme',saved);
+    document.getElementById('themeToggle').textContent=saved==='dark'?'☀️':'🌙';
+  }
+})();
+</script>
+</body>
+</html>
